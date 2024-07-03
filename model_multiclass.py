@@ -5,15 +5,15 @@ import tensorflow.keras.backend as Kback
 
 def SAM_avg(x):
     batch, _, _, channel = x.shape
-    x = K.layers.Conv2D(channel//2, kernel_size=1, padding="same")(x)
-    x = K.layers.Conv2D(channel//2, kernel_size=3, padding="same")(x)
+    x = K.layers.Conv2D(channel//2, kernel_size=1, padding="same", kernel_initializer=tf.keras.initializers.HeNormal())(x)
+    x = K.layers.Conv2D(channel//2, kernel_size=3, padding="same", kernel_initializer=tf.keras.initializers.HeNormal())(x)
     x = K.layers.BatchNormalization()(x)
     x = CAM(x)
     ## Average Pooling
     x1 = tf.reduce_mean(x, axis=-1)
     x1 = tf.expand_dims(x1, axis=-1)
     ## Conv layer
-    feats = K.layers.Conv2D(1, kernel_size=7, padding="same", activation="sigmoid")(x1)
+    feats = K.layers.Conv2D(1, kernel_size=7, padding="same", activation="sigmoid", kernel_initializer=tf.keras.initializers.HeNormal())(x1)
     feats = K.layers.Multiply()([x, feats])
     return feats
 
@@ -99,7 +99,7 @@ class RichardsSigmoid(K.layers.Layer):
     
 input_layer = K.Input(shape=(256,256,3))
 
-deep_learner = K.applications.ResNet50(include_top = False, weights = "imagenet", input_tensor = input_layer)
+deep_learner = K.applications.DenseNet169(include_top = False, weights = "imagenet", input_tensor = input_layer)
 for layer in deep_learner.layers:
     layer.trainable = True
 
@@ -107,9 +107,10 @@ input_img = K.layers.Input(shape=(256,256,3))
 feat_img = deep_learner(input_img)
 feat_img = CSSAM(feat_img)
 flat = K.layers.GlobalAveragePooling2D()(feat_img)
+flat = K.layers.Dropout(0.2)(flat)
 output = K.layers.Dense(3, activation='softmax')(flat)
 
 model = K.Model(inputs=input_img, outputs=output)
-optimizer = K.optimizers.Adam(lr=0.0001)
+optimizer = K.optimizers.AdamW(lr=0.0001)
 model.compile(loss=["categorical_crossentropy"], metrics=METRICS, optimizer = optimizer)
 model.summary()
