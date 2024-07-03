@@ -99,7 +99,7 @@ class RichardsSigmoid(K.layers.Layer):
     
 input_layer = K.Input(shape=(256,256,3))
 
-deep_learner = K.applications.ResNet50(include_top = False, weights = "imagenet", input_tensor = input_layer)
+deep_learner = K.applications.DenseNet169(include_top = False, weights = "imagenet", input_tensor = input_layer)
 for layer in deep_learner.layers:
     layer.trainable = True
 
@@ -107,9 +107,10 @@ input_img = K.layers.Input(shape=(256,256,3))
 feat_img = deep_learner(input_img)
 feat_img = CSSAM(feat_img)
 flat = K.layers.GlobalAveragePooling2D()(feat_img)
+flat = K.layers.Dropout(0.2)(flat)
 output = K.layers.Dense(2, activation='softmax')(flat)
 
 model = K.Model(inputs=input_img, outputs=output)
-optimizer = K.optimizers.Adam(lr=0.0001)
+optimizer = K.optimizers.AdamW(lr=0.0001)
 model.compile(loss=["categorical_crossentropy"], metrics=METRICS, optimizer = optimizer)
 model.summary()
