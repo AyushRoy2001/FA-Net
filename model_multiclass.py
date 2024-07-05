@@ -19,8 +19,8 @@ def SAM_avg(x, cam):
 
 def SAM_max(x, cam):
     batch, _, _, channel = x.shape
-    x = K.layers.SeparableConv2D(channel, kernel_size=1, padding="same")(x)
-    x = K.layers.SeparableConv2D(channel, kernel_size=3, padding="same")(x)
+    x = K.layers.SeparableConv2D(channel, kernel_size=1, padding="same", kernel_initializer=tf.keras.initializers.HeNormal())(x)
+    x = K.layers.SeparableConv2D(channel, kernel_size=3, padding="same", kernel_initializer=tf.keras.initializers.HeNormal())(x)
     x = K.layers.BatchNormalization()(x)
     x = x*cam
     ## Max Pooling
@@ -108,7 +108,7 @@ feat_img = deep_learner(input_img)
 Cam = CAM(feat_img)
 feat_img = CSSAM(feat_img, Cam)
 flat = K.layers.GlobalAveragePooling2D()(feat_img)
-flat = K.layers.Dropout(0.2)(flat)
+flat = K.layers.Dropout(0.35)(flat)
 output = K.layers.Dense(3, activation='softmax')(flat)
 
 model = K.Model(inputs=input_img, outputs=output)
