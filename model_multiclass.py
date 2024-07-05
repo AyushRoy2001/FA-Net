@@ -3,12 +3,12 @@ from tensorflow.keras.layers import Layer
 import tensorflow.keras as K
 import tensorflow.keras.backend as Kback
 
-def SAM_avg(x):
+def SAM_avg(x, cam):
     batch, _, _, channel = x.shape
-    x = K.layers.Conv2D(channel//2, kernel_size=1, padding="same", kernel_initializer=tf.keras.initializers.HeNormal())(x)
-    x = K.layers.Conv2D(channel//2, kernel_size=3, padding="same", kernel_initializer=tf.keras.initializers.HeNormal())(x)
+    x = K.layers.SeparableConv2D(channel, kernel_size=1, padding="same", kernel_initializer=tf.keras.initializers.HeNormal())(x)
+    x = K.layers.SeparableConv2D(channel, kernel_size=3, padding="same", kernel_initializer=tf.keras.initializers.HeNormal())(x)
     x = K.layers.BatchNormalization()(x)
-    x = CAM(x)
+    x = x*cam
     ## Average Pooling
     x1 = tf.reduce_mean(x, axis=-1)
     x1 = tf.expand_dims(x1, axis=-1)
@@ -17,12 +17,12 @@ def SAM_avg(x):
     feats = K.layers.Multiply()([x, feats])
     return feats
 
-def SAM_max(x):
+def SAM_max(x, cam):
     batch, _, _, channel = x.shape
     x = K.layers.SeparableConv2D(channel, kernel_size=1, padding="same")(x)
     x = K.layers.SeparableConv2D(channel, kernel_size=3, padding="same")(x)
     x = K.layers.BatchNormalization()(x)
-    x = CAM(x)
+    x = x*cam
     ## Max Pooling
     x2 = tf.reduce_max(x, axis=-1)
     x2 = tf.expand_dims(x2, axis=-1)
@@ -31,10 +31,10 @@ def SAM_max(x):
     feats = K.layers.Multiply()([x, feats])
     return feats
 
-def CSSAM(x):
-    x_avg = SAM_avg(x)
-    x_max = SAM_max(x)
-    x = K.layers.Concatenate()([x_avg, x_max])
+def CSSAM(x, cam):
+    x_avg = SAM_avg(x, cam)
+    x_max = SAM_max(x, cam)
+    x = K.layers.Concatenate()([x_avg, x_max, cam])
     x = ChannelDropout(drop_ratio=0.5)(x)
     return x
 
@@ -105,7 +105,8 @@ for layer in deep_learner.layers:
 
 input_img = K.layers.Input(shape=(256,256,3)) 
 feat_img = deep_learner(input_img)
-feat_img = CSSAM(feat_img)
+Cam = CAM(feat_img)
+feat_img = CSSAM(feat_img, Cam)
 flat = K.layers.GlobalAveragePooling2D()(feat_img)
 flat = K.layers.Dropout(0.2)(flat)
 output = K.layers.Dense(3, activation='softmax')(flat)
