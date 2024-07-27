@@ -1,5 +1,6 @@
 # FA-Net: A Fuzzy Attention-aided Deep Neural Network for Pneumonia Detection in Chest X-Rays
-This is the official implementation  of "FA-Net: A Fuzzy Attention-aided Deep Neural Network for Pneumonia Detection in Chest X-Rays" (IEEE CBMS, 2024)
+This is the official implementation  of "FA-Net: A Fuzzy Attention-aided Deep Neural Network for Pneumonia Detection in Chest X-Rays" (IEEE CBMS, 2024) <br/>
+Dataset details and preprocessing steps will be shared soon!
 
 ### Overall workflow:
 ![architecture](https://github.com/AyushRoy2001/FA-Net/assets/94052139/61446df1-e121-4d63-b082-38a3d5845cc5)
