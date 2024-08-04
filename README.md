@@ -21,7 +21,7 @@ Dataset details and preprocessing steps will be shared soon!
 ### Subspace feature representation
 ![space](https://github.com/AyushRoy2001/FA-Net/assets/94052139/75a6ac14-29f5-4a54-a31e-c5174d296ed2)
 
-## Authors :nerd_face:*
+## Authors :nerd_face:
 Ayush Roy<br/>
 Anurag Bhattacharjee<br/>
 Ram Sarkar<br/>
