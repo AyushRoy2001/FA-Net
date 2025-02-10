@@ -28,3 +28,16 @@ Ram Sarkar<br/>
 Diego Oliva<br/>
 Oscar Ramos-Soto<br/> 
 Francisco J. Alvarez-Padilla<br/>
+
+## Citation :thinking:
+Please do cite our paper in case you find it useful for your research.<br/>
+```
+@inproceedings{roy2024fa,
+  title={FA-Net: A Fuzzy Attention-aided Deep Neural Network for Pneumonia Detection in Chest X-Rays},
+  author={Roy, Ayush and Bhattacharjee, Anurag and Oliva, Diego and Ramos-Soto, Oscar and Alvarez-Padilla, Francisco J and Sarkar, Ram},
+  booktitle={2024 IEEE 37th International Symposium on Computer-Based Medical Systems (CBMS)},
+  pages={338--343},
+  year={2024},
+  organization={IEEE}
+}
+```
